@@ -73,6 +73,12 @@ class DVRouter(DVRouterBase):
         assert port in self.ports.get_all_ports(), "Link should be up, but is not."
 
         # TODO: fill this in!
+        self.table[host] = TableEntry(
+            dst=host,
+            port=port,
+            latency=self.ports.get_latency(port),
+            expire_time=FOREVER
+        )
 
     def handle_data_packet(self, packet, in_port):
         """
@@ -85,6 +91,14 @@ class DVRouter(DVRouterBase):
         :return: nothing.
         """
         # TODO: fill this in!
+        # this packet has the destination (dst) and source (src)
+        if packet.dst not in self.table.keys():
+            return
+
+        entry = self.table[packet.dst]
+        if entry.latency >= INFINITY:
+            return
+        self.send(packet=packet, port=entry.port)
 
     def send_routes(self, force=False, single_port=None):
         """
@@ -98,6 +112,10 @@ class DVRouter(DVRouterBase):
         :return: nothing.
         """
         # TODO: fill this in!
+        if force == True:
+            for port in self.ports.get_all_ports():
+                for host, entry in self.table.items():
+                    self.send_route(port, entry.dst, entry.latency)
 
     def expire_routes(self):
         """
@@ -105,6 +123,13 @@ class DVRouter(DVRouterBase):
         accordingly.
         """
         # TODO: fill this in!
+        # dictionary changes size during iteration
+        hosts = list(self.table.keys())
+        for host in hosts:
+            route = self.table[host]
+            if api.current_time() > route.expire_time:
+                self.s_log(f"{route} has expired.")
+                del self.table[host]
 
     def handle_route_advertisement(self, route_dst, route_latency, port):
         """
@@ -116,6 +141,23 @@ class DVRouter(DVRouterBase):
         :return: nothing.
         """
         # TODO: fill this in!
+        new_latency = route_latency + self.ports.get_latency(port)
+        current_route = self.table.get(route_dst)
+        new_route = TableEntry(
+            dst=route_dst,
+            port=port,
+            latency=new_latency,
+            expire_time=api.current_time() + self.ROUTE_TTL
+        )
+
+        if not current_route:
+            self.table[route_dst] = new_route
+
+        elif new_latency < current_route.latency:
+            self.table[route_dst] = new_route
+
+        elif current_route.port == port:
+            self.table[route_dst] = new_route
 
     def handle_link_up(self, port, latency):
         """

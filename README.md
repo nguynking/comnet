@@ -2,9 +2,9 @@
 
 **Status: In Progress**
 
-These are my solutions to [CS 168: Introduction to the Internet: Architecture and Protocols](https://cs168.io/) projects at Berkely taught by [Sylvia Ratnasamy](https://people.eecs.berkeley.edu/~sylvia/) & [Rob Shakir](https://rob.sh/).
+These are my solutions to [CS 168 - Introduction to the Internet: Architecture and Protocols](https://cs168.io/) projects at Berkeley taught by [Sylvia Ratnasamy](https://people.eecs.berkeley.edu/~sylvia/) & [Rob Shakir](https://rob.sh/).
 
-All projects are written in Python. This class doesn't have recordings but its materials are enough to understand most of the concepts.
+All projects are written in Python. I'm not taking the class, so this is just for fun. This class doesn't have recordings but its materials are enough to understand most of the concepts.
 
 **Textbook:** Computer Networking: A Top-Down Approach, 7th Edition
 
